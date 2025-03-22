@@ -4,7 +4,7 @@ import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
 // Konfiguracja Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyDPd2TT9ZBPnltCd0MX1YVWIp62w6oVUuE",
+    apiKey: "",
     authDomain: "polang-6a0ac.firebaseapp.com",
     projectId: "polang-6a0ac",
     storageBucket: "polang-6a0ac.appspot.com",

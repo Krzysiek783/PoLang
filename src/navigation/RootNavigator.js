@@ -7,6 +7,7 @@ import SplashScreen from "../screens/splash";
 import { auth } from "../scripts/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../scripts/firebaseConfig";
+import LoginScreen from "../screens/SignLog_In/log_in";
 
 const RootNavigator = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -41,7 +42,7 @@ const RootNavigator = () => {
       {!isLoggedIn ? (
         <AuthNavigator />
       ) : onboardingDone ? (
-        <MainNavigator />
+        <LoginScreen />
       ) : (
         <InfoNavigator />
       )}
