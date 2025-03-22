@@ -5,13 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 
 
 export default function SplashScreen() {
-    const navigation = useNavigation(); // Pobranie obiektu navigation
-  
-    useEffect(() => {
-      setTimeout(() => {
-        navigation.replace("Home"); // Nawigacja po 3 sekundach
-      }, 3000);
-    }, []);
+    
   
     return (
     <LinearGradient colors={["#17D5FF", "#15BEE4","#0E8099"]}

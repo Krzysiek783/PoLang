@@ -48,13 +48,13 @@ export default function WelcomeScreen() {
           <Text style={styles.orText}>Lub</Text>
 
           <TouchableOpacity style={styles.loginButton}
-          onPress={()=> navigation.navigate("login")}>
+          onPress={()=> navigation.navigate("Login")}>
             <Text style={styles.loginButtonText}>Mam już Konto</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.startButton}
-            onPress={() => navigation.navigate("gradient")}
+            onPress={() => navigation.navigate("Gradient")}
           >
             <Text style={styles.startButtonText}>Przycisk PomocniczyForMe</Text>
           </TouchableOpacity>

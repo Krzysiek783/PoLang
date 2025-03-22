@@ -1,0 +1,9 @@
+<resources>
+  <string name="app_name">PoLang</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="facebook_app_id">969860155025779</string>
+  <string name="facebook_client_token">57a4cb2b9001f4b52236e904afd91ad0</string>
+  <string name="fb_login_protocol_scheme">fb969860155025779</string>
+  <string name="expo_system_ui_user_interface_style" translatable="false">light</string>
+</resources>

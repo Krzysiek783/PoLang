@@ -1,8 +1,10 @@
 {
   "expo": {
     "name": "PoLang",
-    "slug": "PoLang",
+    "slug": "polang",
     "version": "1.0.0",
+    "scheme": "polang",
+    "platforms": ["android","web"],
     "orientation": "portrait",
     "icon": "./src/assets/logo.png",
     "userInterfaceStyle": "light",
@@ -13,16 +15,59 @@
       "backgroundColor": "#00C6FF"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "SKAdNetworkItems": [
+          {
+            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/logo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.PoLang",
+      "permissions": [
+        "android.permission.INTERNET"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "com.anonymous.PoLang",
+              "host": "oauthredirect"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e21e1857-94f8-42f9-9c2a-efe29b8863f9"
+      },
+      "GOOGLE_CLIENT_ID": "591273198583-14qms3topdj2t49f7ff1d3q6n9b3a1gr.apps.googleusercontent.com"
+    },
+    "plugins": [
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "969860155025779",
+          "clientToken": "57a4cb2b9001f4b52236e904afd91ad0",
+          "displayName": "PoLang"
+        }
+      ]
+    ],
+    "owner": "krzysiek78333"
   }
 }

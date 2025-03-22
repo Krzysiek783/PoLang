@@ -1,23 +1,68 @@
 import React, { useState } from "react";
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet 
-} from "react-native";
+import {View,Text,TextInput,TouchableOpacity,StyleSheet,Alert} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { FontAwesome } from "@expo/vector-icons"; // ℹ️ Ikony informacyjne
+import { FontAwesome } from "@expo/vector-icons"; // ℹ️ Ikony
 import { useNavigation } from "@react-navigation/native";
+import {  auth, signInWithEmailAndPassword  } from "../../scripts/firebaseConfig";
+import { useGoogleLogin } from "../../scripts/google_login";
+import { useFacebookLogin } from "../../scripts/facebook_login";
 
-export default function LoginScreen() {
+const LoginScreen = () => {
+  const { promptAsync: googlePrompt } = useGoogleLogin();
+  const { promptAsync: facebookPrompt } = useFacebookLogin();
+
+
+
+
+
+
+
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+      Alert.alert("Sukces", "Zalogowano przez Google!");
+    } catch (error) {
+      Alert.alert("Błąd logowania", error.message);
+    }
+  };
+  
+  const handleFacebookLogin = async () => {
+    try {
+      await loginWithFacebook();
+      Alert.alert("Sukces", "Zalogowano przez Facebook!");
+    } catch (error) {
+      Alert.alert("Błąd logowania", error.message);
+    }
+  };
+  
+
+
+
+
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
+  const handleLogin = async () => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+  
+      if (!user.emailVerified) {
+        Alert.alert("Błąd logowania", "Musisz zweryfikować swój adres e-mail przed zalogowaniem.");
+        return;
+      }
+  
+      Alert.alert("Sukces", "Zalogowano pomyślnie!");  
+    } catch (error) {
+      Alert.alert("Błąd logowania", error.message);
+    }
+  };
+
   return (
     <LinearGradient
-      colors={["#E8D6CD", "#C2A99A"]} // Gradient jak w designie
+      colors={["#E8D6CD", "#C2A99A"]} 
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
       locations={[0.79, 1]}
@@ -51,30 +96,32 @@ export default function LoginScreen() {
       </View>
 
       {/* Przycisk Logowania */}
-      <TouchableOpacity style={styles.loginButton}>
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginButtonText}>Zaloguj się</Text>
       </TouchableOpacity>
 
       {/* Zapomniałeś hasło */}
-      <TouchableOpacity style={styles.forgotPassword} onPress={() =>navigation.navigate("ForgotPassword")}>
-        <Text style={styles.forgotPasswordText}>Za pomniałeś Hasło?</Text>
+      <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate("ForgotPassword")}>
+        <Text style={styles.forgotPasswordText}>Zapomniałeś Hasło?</Text>
       </TouchableOpacity>
 
       {/* Logowanie przez Google i Facebooka */}
       <View style={styles.socialLoginContainer}>
-        <TouchableOpacity style={styles.socialButton}>
-          <FontAwesome name="google" size={20} color="red" />
-          <Text style={styles.socialText}> Użyj Konta Google</Text>
-        </TouchableOpacity>
+        <TouchableOpacity style={styles.socialButton} onPress={() => googlePrompt()}>
+      <FontAwesome name="google" size={20} color="red" />
+      <Text style={styles.socialText}> Użyj Konta Google</Text>
+    </TouchableOpacity>
 
-        <TouchableOpacity style={styles.socialButton}>
-          <FontAwesome name="facebook" size={20} color="blue" />
-          <Text style={styles.socialText}> Użyj Konta Facebook</Text>
-        </TouchableOpacity>
+    <TouchableOpacity style={styles.socialButton} onPress={() => facebookPrompt()}>
+      <FontAwesome name="facebook" size={20} color="blue" />
+      <Text style={styles.socialText}> Użyj Konta Facebook</Text>
+    </TouchableOpacity>
       </View>
     </LinearGradient>
   );
-}
+};
+
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {

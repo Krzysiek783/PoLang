@@ -1,92 +1,119 @@
 import React, { useState } from "react";
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet 
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { FontAwesome } from "@expo/vector-icons"; // ℹ️ Ikonki
+import { FontAwesome } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { auth, db, createUserWithEmailAndPassword, sendEmailVerification, doc, setDoc } from "../../scripts/firebaseConfig";
+import { useGoogleLogin } from "../../scripts/google_login";
+import { useFacebookLogin } from "../../scripts/facebook_login";  // Dodaj Facebook login
 
-export default function RegisterScreen() {
+
+
+
+
+
+const RegisterScreen = () => {
+  const { request, promptAsync } = useGoogleLogin();
+  const { request: facebookRequest, promptAsync: facebookPrompt } = useFacebookLogin();  // Pobierz Facebook login
+
+  
+
+
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigation = useNavigation();
+
+  
+const handleRegister = async () => {
+  if (password !== confirmPassword) {
+    Alert.alert("Błąd", "Hasła nie są takie same!");
+    return;
+  }
+
+  try {
+    // 🔹 Tworzenie użytkownika w Firebase Auth (Firebase go rejestruje, ale nie wpuszczamy go do aplikacji)
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // 🔹 Wysłanie maila weryfikacyjnego
+    await sendEmailVerification(user);
+
+    // 🔹 Dodanie użytkownika do Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      createdAt: new Date(),
+      level: "beginner",
+      verified: false, // Konto NIE jest zweryfikowane
+    });
+
+    Alert.alert("Sukces!", "Wysłaliśmy e-mail weryfikacyjny. Sprawdź swoją skrzynkę pocztową!");
+
+    // 🔹 Przekierowanie na ekran oczekiwania na weryfikację
+    //navigation.navigate("Verification");
+
+  } catch (error) {
+    Alert.alert("Błąd rejestracji", error.message);
+  }
+};
+  
 
   return (
-    <LinearGradient
-      colors={["#E8D6CD", "#C2A99A"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-      locations={[0.79, 1]}
-      style={styles.container}
-    >
+    <LinearGradient colors={["#E8D6CD", "#C2A99A"]} style={styles.container}>
       <Text style={styles.header}>Zarejestruj Się</Text>
 
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Podaj Swój email:</Text>
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Wpisz email"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <FontAwesome name="info-circle" size={20} color="gray" style={styles.icon} />
-        </View>
+        <TextInput style={styles.inputWrapper} placeholder="Wpisz email" value={email} onChangeText={setEmail} />
 
         <Text style={styles.label}>Wprowadź Hasło:</Text>
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Wpisz hasło"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-          <FontAwesome name="info-circle" size={20} color="gray" style={styles.icon} />
-        </View>
+        <TextInput style={styles.inputWrapper} placeholder="Wpisz hasło" secureTextEntry value={password} onChangeText={setPassword} />
 
         <Text style={styles.label}>Powtórz Hasło:</Text>
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="Powtórz hasło"
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-          />
-          <FontAwesome name="info-circle" size={20} color="gray" style={styles.icon} />
-        </View>
+        <TextInput style={styles.inputWrapper} placeholder="Powtórz hasło" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} />
       </View>
 
-      {/* Przycisk Rejestracji */}
-      <TouchableOpacity style={styles.registerButton}>
-        <Text style={styles.registerButtonText}>Zare jestruj się</Text>
+      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+        <Text style={styles.registerButtonText}>Zarejestruj się</Text>
       </TouchableOpacity>
 
-      {/* Logowanie przez Google i Facebooka */}
       <View style={styles.socialLoginContainer}>
-        <TouchableOpacity style={styles.socialButton}>
-          <FontAwesome name="google" size={20} color="red" />
-          <Text style={styles.socialText}> Użyj Konta Google</Text>
-        </TouchableOpacity>
+      <TouchableOpacity 
+      style={styles.socialButton} 
+      onPress={() => {
+        if (request) {
+          promptAsync(); 
+        } else {
+          console.error("Google login request is null.");
+        }
+      }}
+    >
+      <FontAwesome name="google" size={20} color="red" />
+      <Text style={styles.socialText}> Użyj Konta Google</Text>
+    </TouchableOpacity>
 
-        <TouchableOpacity style={styles.socialButton}>
-          <FontAwesome name="facebook" size={20} color="blue" />
-          <Text style={styles.socialText}> Użyj Konta Facebook</Text>
-        </TouchableOpacity>
+    {/* 🔹 Logowanie Facebook */}
+    <TouchableOpacity 
+        style={styles.socialButton} 
+        onPress={() => {
+          if (facebookRequest) {
+            facebookPrompt();
+          } else {
+            console.error("Facebook login request is null.");
+          }
+        }}
+      >
+        <FontAwesome name="facebook" size={20} color="blue" />
+        <Text style={styles.socialText}> Użyj Konta Facebook</Text>
+      </TouchableOpacity>
       </View>
-
-      {/* Regulamin */}
-      <Text style={styles.terms}>
-        Zakładając Konto Akceptujesz nasz <Text style={styles.link}>Regulamin</Text>. To w jaki sposób gromadzimy i wykorzystujemy twoje dane, opisuje nasza {" "}
-        <Text style={styles.link}>Polityka Prywatności</Text>.
-      </Text>
     </LinearGradient>
   );
-}
+};
+
+export default RegisterScreen;
+
 
 const styles = StyleSheet.create({
   container: {
